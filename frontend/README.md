@@ -22,8 +22,8 @@ A modern, Pornhub-inspired face swap web application built with Next.js and Tail
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/mybestone-frontend.git
-cd mybestone-frontend
+git clone https://github.com/giacomoarcaro/faceswap-adult.git
+cd faceswap-adult/frontend
 ```
 
 2. Install dependencies:
@@ -45,9 +45,21 @@ npm run dev
 - `npm run start` - Start production server
 - `npm run lint` - Run ESLint
 
-## Deployment
+## Deployment on Vercel
 
-This project is configured for deployment on Vercel. Simply connect your GitHub repository to Vercel for automatic deployments.
+1. Push your code to GitHub
+2. Go to [Vercel](https://vercel.com) and sign up/login with your GitHub account
+3. Click "New Project"
+4. Import your GitHub repository (faceswap-adult)
+5. Configure the project:
+   - Framework Preset: Next.js
+   - Root Directory: frontend
+   - Build Command: `next build`
+   - Output Directory: `.next`
+6. Add Environment Variables:
+   - Name: `NEXT_PUBLIC_API_URL`
+   - Value: Your backend API URL (e.g., `https://your-backend-url.com`)
+7. Click "Deploy"
 
 ## Environment Variables
 
