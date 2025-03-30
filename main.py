@@ -1,7 +1,6 @@
 import os
 import shutil
 import tempfile
-import subprocess
 from pathlib import Path
 from typing import Optional
 from fastapi import FastAPI, UploadFile, File, HTTPException
@@ -14,6 +13,7 @@ from insightface.app.common import Face
 import onnxruntime
 from PIL import Image
 import logging
+from download_model import download_model
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -37,25 +37,6 @@ OUTPUT_DIR.mkdir(exist_ok=True)
 # Initialize face analysis
 face_analyzer = FaceAnalysis(name='buffalo_l')
 face_analyzer.prepare(ctx_id=-1, det_size=(640, 640))
-
-def download_model():
-    """Download the model file if it doesn't exist."""
-    model_path = "models/inswapper_128.onnx"
-    if not os.path.exists(model_path):
-        logger.info("Model file not found. Attempting to download...")
-        try:
-            os.makedirs("models", exist_ok=True)
-            subprocess.run([
-                "wget",
-                "https://huggingface.co/facefusion/facefusion-models/resolve/main/inswapper_128.onnx",
-                "-O",
-                model_path
-            ], check=True)
-            logger.info("Model file downloaded successfully")
-        except Exception as e:
-            logger.error(f"Failed to download model file: {str(e)}")
-            raise RuntimeError("Failed to download model file")
-    return model_path
 
 # Load face swap model
 model_path = download_model()

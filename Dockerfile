@@ -4,7 +4,6 @@ FROM python:3.9-slim
 RUN apt-get update && apt-get install -y \
     libgl1-mesa-glx \
     libglib2.0-0 \
-    wget \
     && rm -rf /var/lib/apt/lists/*
 
 # Set working directory
@@ -16,15 +15,15 @@ COPY requirements.txt .
 # Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Create models directory and download model
-RUN mkdir -p models && \
-    wget https://huggingface.co/facefusion/facefusion-models/resolve/main/inswapper_128.onnx -O models/inswapper_128.onnx
-
 # Copy application code
 COPY main.py .
+COPY download_model.py .
 
 # Create output directory
 RUN mkdir -p output
+
+# Download model during build
+RUN python download_model.py
 
 # Expose port
 EXPOSE 8000
