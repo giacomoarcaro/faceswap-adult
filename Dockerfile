@@ -1,4 +1,4 @@
-FROM python:3.9-slim
+FROM python:3.10-slim
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
@@ -17,18 +17,11 @@ COPY requirements.txt .
 # Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy application code
-COPY main.py .
-COPY download_model.py .
+# Copy the rest of the application
+COPY . .
 
-# Create output directory
-RUN mkdir -p output
+# Create models directory
+RUN mkdir -p models
 
-# Download model during build
-RUN python download_model.py
-
-# Expose port
-EXPOSE 8000
-
-# Run the application
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"] 
+# Command to download model and start the server
+CMD ["sh", "-c", "python download_model.py && uvicorn main:app --host 0.0.0.0 --port 8000"] 
