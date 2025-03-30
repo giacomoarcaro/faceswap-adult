@@ -1,76 +1,106 @@
-# Face Swap API
+# FaceSwap Adult
 
-A FastAPI-based backend service for face swapping in videos using deep learning models.
+A professional face-swapping application for adult content, featuring a modern web interface and powerful backend processing.
+
+## Project Structure
+
+- `frontend/` - Next.js web application with Pornhub-inspired UI
+- `backend/` - FastAPI server handling face-swapping operations
 
 ## Features
 
-- Face detection and extraction from source images
-- Face swapping in video frames
-- Progress tracking and logging
-- Temporary file handling
-- Docker support
+### Frontend
+- Modern, responsive UI with Pornhub-inspired design
+- Drag-and-drop file uploads
+- Real-time progress tracking
+- Error handling and user feedback
 
-## Prerequisites
+### Backend
+- FastAPI server with face-swapping capabilities
+- Support for image and video processing
+- Efficient file handling
+- Progress logging
 
+## Tech Stack
+
+### Frontend
+- Next.js 14
+- TypeScript
+- Tailwind CSS
+- React Dropzone
+- React Icons
+
+### Backend
+- Python 3.9+
+- FastAPI
+- OpenCV
+- InsightFace
+- ONNX Runtime
+
+## Getting Started
+
+### Prerequisites
 - Python 3.9 or higher
-- Docker (optional, for containerized deployment)
-- Face swap model file (`inswapper_128.onnx`)
+- Node.js 18 or higher
+- Docker (optional)
 
-## Setup
-
-1. Clone the repository
-2. Create a `models` directory and place the face swap model file (`inswapper_128.onnx`) in it
-3. Install dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-## Running Locally
-
-1. Start the server:
-   ```bash
-   python main.py
-   ```
-   The server will start at `http://localhost:8000`
-
-2. Use Docker:
-   ```bash
-   docker build -t faceswap-api .
-   docker run -p 8000:8000 faceswap-api
-   ```
-
-## API Endpoints
-
-### Health Check
-- **GET** `/health`
-- Returns the server status
-
-### Face Swap
-- **POST** `/faceswap`
-- Accepts multipart form data with:
-  - `source_image`: Source face image (JPG/PNG)
-  - `target_video`: Target video file (MP4)
-- Returns JSON response with output video path
-
-## Example Usage
-
-Using curl:
+### Backend Setup
+1. Install Python dependencies:
 ```bash
-curl -X POST "http://localhost:8000/faceswap" \
-  -H "accept: application/json" \
-  -H "Content-Type: multipart/form-data" \
-  -F "source_image=@path/to/source.jpg" \
-  -F "target_video=@path/to/target.mp4"
+pip install -r requirements.txt
 ```
 
-## Output
+2. Place the face swap model in the `models` directory:
+```bash
+mkdir -p models
+# Place inswapper_128.onnx in the models directory
+```
 
-Processed videos are saved in the `output` directory with filenames in the format:
-`output_[source_image_name]_[target_video_name]`
+3. Start the backend server:
+```bash
+python main.py
+```
 
-## Notes
+### Frontend Setup
+1. Navigate to the frontend directory:
+```bash
+cd frontend
+```
 
-- The application uses temporary storage for processing files
-- All temporary files are automatically deleted after processing
-- Progress is logged to the console during video processing
-- The face swap model must be placed in the `models` directory before running 
+2. Install dependencies:
+```bash
+npm install
+```
+
+3. Start the development server:
+```bash
+npm run dev
+```
+
+4. Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+## Deployment
+
+### Backend
+The backend can be deployed using Docker:
+```bash
+docker build -t faceswap-backend .
+docker run -p 8000:8000 faceswap-backend
+```
+
+### Frontend
+The frontend is configured for deployment on Vercel:
+1. Connect your GitHub repository to Vercel
+2. Set the environment variable `NEXT_PUBLIC_API_URL` to your backend URL
+3. Deploy
+
+## Environment Variables
+
+### Frontend
+```env
+NEXT_PUBLIC_API_URL=http://localhost:8000
+```
+
+## License
+
+MIT 
