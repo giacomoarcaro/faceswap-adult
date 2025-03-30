@@ -3,11 +3,16 @@ services:
     name: faceswap-backend
     env: python
     buildCommand: |
+      apt-get update && apt-get install -y \
+        build-essential \
+        g++ \
+        libgl1-mesa-glx \
+        libglib2.0-0 \
+      && rm -rf /var/lib/apt/lists/*
       pip install -r requirements.txt
     startCommand: |
-      mkdir -p models
-      wget https://huggingface.co/deepinsight/insightface/resolve/main/models/inswapper_128.onnx -O models/inswapper_128.onnx
-      python main.py
+      python download_model.py
+      uvicorn main:app --host 0.0.0.0 --port $PORT
     envVars:
       - key: PYTHON_VERSION
         value: 3.9.0
