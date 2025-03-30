@@ -9,6 +9,12 @@ MODEL_PATH = "models/inswapper_128.onnx"
 def download_model():
     """Download the model file if it doesn't exist."""
     try:
+        # Get Hugging Face token
+        hf_token = os.getenv('HF_TOKEN')
+        if not hf_token:
+            print("Error: HF_TOKEN environment variable is not set")
+            sys.exit(1)
+
         # Create models directory if it doesn't exist
         os.makedirs("models", exist_ok=True)
         
@@ -19,8 +25,12 @@ def download_model():
             
         print(f"Downloading model from {MODEL_URL}...")
         
-        # Download with progress bar
-        response = requests.get(MODEL_URL, stream=True)
+        # Download with progress bar and authentication
+        headers = {
+            'Authorization': f'Bearer {hf_token}'
+        }
+        
+        response = requests.get(MODEL_URL, stream=True, headers=headers)
         response.raise_for_status()  # Raise an exception for bad status codes
         
         total_size = int(response.headers.get('content-length', 0))
