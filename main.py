@@ -1,6 +1,7 @@
 import os
 import shutil
 import tempfile
+import subprocess
 from pathlib import Path
 from typing import Optional
 from fastapi import FastAPI, UploadFile, File, HTTPException
@@ -38,10 +39,21 @@ face_analyzer = FaceAnalysis(name='buffalo_l')
 face_analyzer.prepare(ctx_id=-1, det_size=(640, 640))
 
 # Load face swap model
-model_path = "models/inswapper_128.onnx"  # Using relative path
+model_path = "models/inswapper_128.onnx"
 if not os.path.exists(model_path):
-    logger.error(f"Face swap model not found at {model_path}")
-    raise RuntimeError("Face swap model not found")
+    logger.info("Model file not found. Attempting to download...")
+    try:
+        os.makedirs("models", exist_ok=True)
+        subprocess.run([
+            "wget",
+            "https://huggingface.co/deepinsight/insightface/resolve/main/models/inswapper_128.onnx",
+            "-O",
+            model_path
+        ], check=True)
+        logger.info("Model file downloaded successfully")
+    except Exception as e:
+        logger.error(f"Failed to download model file: {str(e)}")
+        raise RuntimeError("Failed to download model file")
 
 face_swapper = onnxruntime.InferenceSession(model_path)
 
