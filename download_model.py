@@ -1,39 +1,30 @@
 import os
 import sys
-import requests
-from tqdm import tqdm
+import gdown
 
 MODELS = {
-    "inswapper_128.onnx": "https://github.com/facefusion/facefusion-assets/releases/download/models/inswapper_128.onnx",
-    "arcface.onnx": "https://github.com/facefusion/facefusion-assets/releases/download/models/arcface.onnx"
+    "inswapper_128.onnx": "1krOLgjW2tAPaqV-Bw4YALz0xT5zlb5HF",
+    "arcface.onnx": "1Gne3Pd3UzQZCCcGm7DLaP97CEFrhO6wE"
 }
 
-def download_file(url: str, filename: str) -> bool:
-    """Download a file with progress bar."""
+def download_file(file_id: str, output_path: str) -> bool:
+    """Download a file from Google Drive using gdown."""
     try:
-        print(f"Downloading {filename}...")
-        response = requests.get(url, stream=True)
-        response.raise_for_status()
+        url = f"https://drive.google.com/uc?id={file_id}"
+        print(f"Downloading {os.path.basename(output_path)}...")
         
-        total_size = int(response.headers.get('content-length', 0))
-        block_size = 8192
+        # Download with progress bar
+        gdown.download(url, output_path, quiet=False)
         
-        with open(filename, 'wb') as f, tqdm(
-            desc=filename,
-            total=total_size,
-            unit='iB',
-            unit_scale=True,
-            unit_divisor=1024,
-        ) as pbar:
-            for chunk in response.iter_content(chunk_size=block_size):
-                size = f.write(chunk)
-                pbar.update(size)
-        
-        print(f"✅ Downloaded {filename}")
-        return True
-        
+        if os.path.exists(output_path):
+            print(f"✅ Downloaded {os.path.basename(output_path)}")
+            return True
+        else:
+            print(f"❌ Error: Failed to download {os.path.basename(output_path)}")
+            return False
+            
     except Exception as e:
-        print(f"❌ Error: Failed to download {filename}: {str(e)}")
+        print(f"❌ Error: Failed to download {os.path.basename(output_path)}: {str(e)}")
         return False
 
 def download_models():
@@ -42,7 +33,7 @@ def download_models():
     os.makedirs("models", exist_ok=True)
     
     success = True
-    for filename, url in MODELS.items():
+    for filename, file_id in MODELS.items():
         model_path = os.path.join("models", filename)
         
         # Skip if file already exists
@@ -51,7 +42,7 @@ def download_models():
             continue
             
         # Download the file
-        if not download_file(url, model_path):
+        if not download_file(file_id, model_path):
             success = False
             break
     
