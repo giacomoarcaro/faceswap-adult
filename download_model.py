@@ -2,49 +2,79 @@ import os
 import sys
 import gdown
 
-MODELS = {
-    "inswapper_128.onnx": "1krOLgjW2tAPaqV-Bw4YALz0xT5zlb5HF",
-    "arcface.onnx": "1ps64Zyx_M-0909gXkQSodimLyUKRu_UL"
-}
-
-def download_file(file_id: str, output_path: str) -> bool:
-    """Download a file from Google Drive using gdown."""
+def download_inswapper():
+    """Download inswapper_128.onnx from Google Drive."""
+    file_id = "1krOLgjW2tAPaqV-Bw4YALz0xT5zlb5HF"
+    output_path = "models/inswapper_128.onnx"
+    
     try:
-        print(f"Downloading {os.path.basename(output_path)}...")
+        # Create models directory if it doesn't exist
+        os.makedirs("models", exist_ok=True)
+        
+        # Skip if file already exists
+        if os.path.isfile(output_path):
+            print(f"✅ inswapper_128.onnx already exists")
+            return True
+            
+        print(f"Downloading inswapper_128.onnx...")
         url = f"https://drive.google.com/uc?id={file_id}"
         
         # Download with progress bar
         gdown.download(url, output_path, quiet=False)
         
         if os.path.exists(output_path):
-            print(f"✅ Downloaded {os.path.basename(output_path)}")
+            print(f"✅ Downloaded inswapper_128.onnx")
             return True
         else:
-            print(f"❌ Error: Failed to download {os.path.basename(output_path)}")
+            print(f"❌ Error: Failed to download inswapper_128.onnx")
             return False
             
     except Exception as e:
-        print(f"❌ Error: Failed to download {os.path.basename(output_path)}: {str(e)}")
+        print(f"❌ Error: Failed to download inswapper_128.onnx: {str(e)}")
         return False
 
-def download_models():
-    """Download all required models if they don't exist."""
-    # Create models directory if it doesn't exist
-    os.makedirs("models", exist_ok=True)
+def download_arcface():
+    """Download arcface.onnx from Google Drive."""
+    file_id = "1ps64Zyx_M-0909gXkQSodimLyUKRu_UL"
+    output_path = "models/arcface.onnx"
     
-    success = True
-    for filename, file_id in MODELS.items():
-        model_path = os.path.join("models", filename)
+    try:
+        # Create models directory if it doesn't exist
+        os.makedirs("models", exist_ok=True)
         
         # Skip if file already exists
-        if os.path.isfile(model_path):
-            print(f"✅ {filename} already exists")
-            continue
+        if os.path.isfile(output_path):
+            print(f"✅ arcface.onnx already exists")
+            return True
             
-        # Download the file
-        if not download_file(file_id, model_path):
-            success = False
-            break
+        print(f"Downloading arcface.onnx...")
+        url = f"https://drive.google.com/uc?id={file_id}"
+        
+        # Download with progress bar
+        gdown.download(url, output_path, quiet=False)
+        
+        if os.path.exists(output_path):
+            print(f"✅ Downloaded arcface.onnx")
+            return True
+        else:
+            print(f"❌ Error: Failed to download arcface.onnx")
+            return False
+            
+    except Exception as e:
+        print(f"❌ Error: Failed to download arcface.onnx: {str(e)}")
+        return False
+
+def download_model():
+    """Download all required models if they don't exist."""
+    success = True
+    
+    # Download inswapper model
+    if not download_inswapper():
+        success = False
+    
+    # Download arcface model
+    if not download_arcface():
+        success = False
     
     if not success:
         print("❌ Failed to download one or more models")
@@ -53,4 +83,4 @@ def download_models():
     print("✅ All models downloaded successfully")
 
 if __name__ == "__main__":
-    download_models() 
+    download_model() 

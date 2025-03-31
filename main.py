@@ -10,7 +10,7 @@ import cv2
 import numpy as np
 from insightface.app import FaceAnalysis
 from insightface.app.common import Face
-import onnxruntime
+from insightface.model_zoo import get_model
 from PIL import Image
 import logging
 from download_model import download_model
@@ -35,12 +35,15 @@ OUTPUT_DIR = Path("output")
 OUTPUT_DIR.mkdir(exist_ok=True)
 
 # Initialize face analysis
-face_analyzer = FaceAnalysis(name='buffalo_l')
-face_analyzer.prepare(ctx_id=-1, det_size=(640, 640))
+app.face_analyzer = FaceAnalysis(name='buffalo_l')
+app.face_analyzer.prepare(ctx_id=0, det_size=(640, 640))
 
 # Load face swap model
-model_path = download_model()
-face_swapper = onnxruntime.InferenceSession(model_path)
+logger.info("Loading face swap model...")
+download_model()  # Download models if needed
+model_path = "models/inswapper_128.onnx"
+app.face_swapper = get_model(model_path)
+logger.info("Face swap model loaded successfully")
 
 @app.get("/health")
 async def health_check():
@@ -52,7 +55,7 @@ def process_image(image_path: str) -> Optional[Face]:
     if img is None:
         raise ValueError("Failed to read image")
     
-    faces = face_analyzer.get(img)
+    faces = app.face_analyzer.get(img)
     if not faces:
         raise ValueError("No face detected in the image")
     
@@ -82,10 +85,10 @@ def process_video(video_path: str, source_face: Face, output_path: str):
             break
             
         # Process frame
-        faces = face_analyzer.get(frame)
+        faces = app.face_analyzer.get(frame)
         if faces:
             # Apply face swap to the first detected face
-            frame = face_swapper.run(None, {
+            frame = app.face_swapper.run(None, {
                 'source': source_face.embedding,
                 'target': faces[0].embedding
             })[0]
